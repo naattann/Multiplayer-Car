@@ -10,6 +10,7 @@ public class RaceLauncher : MonoBehaviour
     {
         if(PlayerPrefs.HasKey("PlayerName"))
         {
+            aaa
             playerName.text = PlayerPrefs.GetString("PlayerName");
         }
     }
