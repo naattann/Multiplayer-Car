@@ -1,0 +1,81 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class RaceController : MonoBehaviour
+{
+    public CheckPointController[] carsController;
+    public static bool racing = false;
+    public static int totalLaps = 1;
+    public int timer = 3;
+
+    public Text startText;
+    AudioSource audioSource;
+    public AudioClip count;
+    public AudioClip start;
+
+    public GameObject endPanel;
+
+
+    void Start()
+    {
+
+        endPanel.SetActive(false);
+        audioSource = GetComponent<AudioSource>();
+        startText.gameObject.SetActive(false);
+        InvokeRepeating("CountDown", 3, 1);
+        GameObject[] cars = GameObject.FindGameObjectsWithTag("Car");
+        carsController = new CheckPointController[cars.Length];
+        for (int i = 0; i < cars.Length; i++)
+        {
+            carsController[i] = cars[i].GetComponent<CheckPointController>();
+        }
+    }
+
+
+    void LateUpdate()
+    {
+        int finishedLap = 0;
+        foreach (CheckPointController controller in carsController)
+        {
+            if (controller.lap == totalLaps + 1) finishedLap++;
+
+            if (finishedLap == carsController.Length && racing)
+            {
+                endPanel.SetActive(true);
+                racing = false;
+            }
+        }
+    }
+
+    void CountDown()
+    {
+        startText.gameObject.SetActive(true);
+        if (timer != 0)
+        {
+            startText.text = timer.ToString();
+            audioSource.PlayOneShot(count);
+            timer--;
+        }
+        else
+        {
+            startText.text = "START!!!";
+            audioSource.PlayOneShot(start);
+            racing = true;
+            CancelInvoke("CountDown");
+            Invoke("HideStartText", 1);
+        }
+    }
+
+    void HideStartText()
+    {
+        startText.gameObject.SetActive(false);
+    }
+
+    public void LoadScene(int index)
+    {
+        SceneManager.LoadScene(index);
+    }
+}
