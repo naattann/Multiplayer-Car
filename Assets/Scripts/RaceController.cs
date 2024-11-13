@@ -18,6 +18,10 @@ public class RaceController : MonoBehaviour
 
     public GameObject endPanel;
 
+    public GameObject carPrefab;
+    public Transform[] spawnPos;
+    public int playerCount;
+
 
     void Start()
     {
@@ -26,6 +30,24 @@ public class RaceController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         startText.gameObject.SetActive(false);
         InvokeRepeating("CountDown", 3, 1);
+
+        for (int i = 0; i < playerCount;i++)
+        {
+            GameObject car = Instantiate(carPrefab);
+            car.transform.position = spawnPos[i].position;
+            car.transform.rotation = spawnPos[i].rotation;
+
+            car.GetComponent<CarApperance>().playerNumber = i;
+
+            if(i == 0)
+            {
+                car.GetComponent<PlayerController>().enabled = true;
+                GameObject.FindObjectOfType<CameraController>().SetCameraProperties(car);
+            }
+        }
+
+
+
         GameObject[] cars = GameObject.FindGameObjectsWithTag("Car");
         carsController = new CheckPointController[cars.Length];
         for (int i = 0; i < cars.Length; i++)
